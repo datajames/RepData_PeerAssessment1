@@ -1,9 +1,10 @@
 ---
 title: 'Reproducible Research: Peer Assessment 1'
 output:
-  pdf_document: default
   html_document:
     keep_md: yes
+  pdf_document: default
+  word_document: default
 ---
 ```{r global_options, include=FALSE}
 library(knitr)
@@ -163,6 +164,7 @@ print(steps.median.filled)
 ```
 
 This shows that the mean remains the same with a slight uplift in the median from the original values
+
 
 ## Are there differences in activity patterns between weekdays and weekends?
 

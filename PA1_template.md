@@ -208,6 +208,7 @@ print(steps.median.filled)
 
 This shows that the mean remains the same with a slight uplift in the median from the original values
 
+
 ## Are there differences in activity patterns between weekdays and weekends?
 
 - **Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.**
