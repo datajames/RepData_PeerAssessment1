@@ -1,15 +1,5 @@
----
-title: 'Reproducible Research: Peer Assessment 1'
-output:
-  pdf_document: default
-  html_document:
-    keep_md: yes
----
-```{r global_options, include=FALSE}
-library(knitr)
-opts_chunk$set(fig.path='figure/',
-                warning=FALSE, message=FALSE,echo=TRUE)
-```
+# Reproducible Research: Peer Assessment 1
+
 
 This file is the completed work from a fork of the following git repository [https://github.com/rdpeng/RepData_PeerAssessment1](https://github.com/rdpeng/RepData_PeerAssessment1). With the following SHA-1 (80edf39c3bb508fee88e3394542f967dd3fd3270).
 
@@ -21,7 +11,8 @@ Answers are produced under each code block to show output of functions.
 
 The file activity.zip was provided as part of the original fork so does not need to be downloaded, just unzipped.  Two data.frames are created to store the activity data in, one has only complete cases.
 
-```{r loadFile}
+
+```r
 # unzip the activity.zip file into the current directory
 unzip("./activity.zip",exdir="./")
 
@@ -36,29 +27,41 @@ activitydata.clean <- na.omit(activitydata)
 
 -  **Make a histogram of the total number of steps taken each day**
 
-```{r histogram1}
+
+```r
 # create an array which holds the sum of steps per day
 temp<-tapply(activitydata.clean$steps,format(activitydata.clean$date,"%Y-%m-%d"),sum)
 
 # draw the historgram and set the labes for axis and title
 hist_raw <- hist(temp,xlab="Sum steps per day",ylab="Frequency", col = "light blue",labels=TRUE,main="Histogram of the total number of steps taken each day")
-
 ```
+
+![](figure/histogram1-1.png) 
 
 - **Calculate and report the mean and median total number of steps taken per day**
 
 Take the variable temp that was created in the previous section which has the total steps per day.  Use the is.na to look for any NAs to remove and then calculate the mean and median.
 
 
-```{r meanAndMedian}
+
+```r
 # calculate the mean and store in variable for reporting and then also display
 steps.mean <- mean(temp[!is.na(temp)])
 print(steps.mean)
-  
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 # calculate the median and store in variable for reporting and then also display
 steps.median <- median(temp[!is.na(temp)])
 print(steps.median)
+```
 
+```
+## [1] 10765
 ```
 
 
@@ -70,7 +73,8 @@ print(steps.median)
 Using the aggregate function we are able to group the 5 min intervals over the days and compute the average.  This is stored in a new variable for plotting
 
 
-```{r aveDailyPattern}
+
+```r
 # find the mean daily pattern for each interval period 
 aveDailyPattern <- aggregate(steps ~ interval, activitydata.clean, mean)
 
@@ -81,36 +85,53 @@ names(aveDailyPattern)[names(aveDailyPattern)=="steps"] <- "aveSteps"
 plot(aveDailyPattern,type="l",ylab="Average steps",main="Average Daily Activity Pattern")
 ```
 
+![](figure/aveDailyPattern-1.png) 
+
 
 - **Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?**
 
-```{r top5MinInterval}
+
+```r
 # use which.max() to get the row number with the max steps and use this to retrieve the interval from the vector
 maxsteps.time <- aveDailyPattern[which.max(aveDailyPattern$aveSteps),1]
 print(maxsteps.time)
+```
 
+```
+## [1] 835
+```
+
+```r
 #create any date with time as 00:00:00 to add the interval to
 d <- as.Date("1970-01-01")
 p <- as.POSIXlt(d)
 #now print out the time component to show us the max time
 format(p + (maxsteps.time*60),"%T")
+```
 
+```
+## [1] "13:55:00"
 ```
 
 
 ## Inputing missing values
 
 - **Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)**
-```{r missingValues}
-sum(!complete.cases(activitydata))
 
+```r
+sum(!complete.cases(activitydata))
+```
+
+```
+## [1] 2304
 ```
 
 - **Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc. Create a new dataset that is equal to the original dataset but with the missing data filled in. **
 
 To fill in the missing values the data set with the average values for each 5 minute interval will be used.  If there is a NA in the steps value for a given interval, the corresponding 5 minute average value will be used.
 
-```{r fillMissingValues}
+
+```r
 # merge the activitydata dataframe and the aveDailyPattern dataframe
 # this gives four columns interval,steps,date and aveSteps
 # this may then be used for comparison and if there is an NA value in steps use the aveSteps for that interval
@@ -123,7 +144,8 @@ filled_data <- filled_data[order(filled_data$date),]
 
 - **Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. **
 
-```{r histogram2}
+
+```r
 # no need to check for any NA values as these were filled in the previous step
 # create an array which holds the sum of steps per day
 temp_filled<-tapply(filled_data$steps,format(filled_data$date,"%Y-%m-%d"),sum)
@@ -132,11 +154,14 @@ temp_filled<-tapply(filled_data$steps,format(filled_data$date,"%Y-%m-%d"),sum)
 hist_filled <- hist(temp_filled,xlab="Sum steps per day",ylab="Frequency", col = "light green",labels=TRUE,main="Histogram of the total number of steps taken each day with filled data")
 ```
 
+![](figure/histogram2-1.png) 
+
 - **Do these values differ from the estimates from the first part of the assignment? **
 
 A table is produced to show the difference in the data from the two histograms
 
-```{r histogramDifference}
+
+```r
 # create a dataframe from the histogram data and calculate the difference between the values
 # not a subset of the hist$breaks was used as this is always $counts+1.  The upper bound of the breaks was chosen for the table
 diff_table <- cbind.data.frame(hist_raw$breaks[2:6],hist_raw$counts,hist_filled$counts,hist_filled$counts-hist_raw$counts)
@@ -148,18 +173,37 @@ names(diff_table) <- c("Upper Break #","Raw Data","Filled Data","Filled Data - R
 print(diff_table)
 ```
 
+```
+##   Upper Break # Raw Data Filled Data Filled Data - Raw Data
+## 1          5000        5           5                      0
+## 2         10000       12          12                      0
+## 3         15000       28          36                      8
+## 4         20000        6           6                      0
+## 5         25000        2           2                      0
+```
+
 
 - **What is the impact of imputing missing data on the estimates of the total daily number of steps?**
 
-```{r impactOfMissingData}
+
+```r
 # calculate the mean and store in variable for reporting and then also display
 steps.mean.filled <- mean(temp_filled[!is.na(temp_filled)])
 print(steps.mean.filled)
-  
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 # calculate the median and store in variable for reporting and then also display
 steps.median.filled <- median(temp_filled[!is.na(temp_filled)])
 print(steps.median.filled)
+```
 
+```
+## [1] 10766.19
 ```
 
 This shows that the mean remains the same with a slight uplift in the median from the original values
@@ -171,7 +215,8 @@ This shows that the mean remains the same with a slight uplift in the median fro
 The filled data, dataframe is used for this with a small function to do an ifelse check on the $date column using weekdays(x).  If this matches a value in the vector `c("Saturday","Sunday")` then it will record the value weekend, else it will record weekday.  The result of this is added as a new factor column in the dataframe.
 
 
-```{r createDayType}
+
+```r
 # store the values for weekend days
 weekend <- c("Saturday","Sunday")
 
@@ -180,7 +225,6 @@ weekday.weekend <- as.factor(sapply(filled_data$date, function(x) ifelse(weekday
 
 # add this as a new column in the filled_data dataframe
 filled_data$dayType <- weekday.weekend
-
 ```
 
 
@@ -189,7 +233,8 @@ filled_data$dayType <- weekday.weekend
 This takes the dataframe from the previous chunk and works and an average for the weekday factor and the weekend factor.  These two resulting data frames are then merged together before being put through the lattice library xyplot function to show weekday and weekend averages ontop of each other.
 
 
-```{r weekday_weekend_comparison}
+
+```r
 # we will need a two row container to place plots in
 par(mfrow=c(2,1))
 
@@ -207,5 +252,7 @@ library(lattice)
 data <- rbind(aveWeekDayPattern,aveWeekEndPattern)
 with(data,xyplot(steps~interval|dayType,type="l",layout=c(1,2),xlab="Interval in minutes past midnight",ylab="steps",main="Comparison of weekday and weekend step averages through the day"))
 ```
+
+![](figure/weekday_weekend_comparison-1.png) 
 
 This shows that there is more activity in the morning on a weekday compared to a weekend, with a slightly earlier start on a weekday.
